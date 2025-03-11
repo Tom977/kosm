@@ -11,54 +11,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("product-list");
 
     function loadProducts() {
-        db.ref("/7/products").once("value")
-            .then(snapshot => {
-                console.log("📦 Pobieranie produktów...");
-                const products = snapshot.val();
-                console.log("📦 Produkty z Firebase:", products);
+    const container = document.getElementById("product-list");
+    container.innerHTML = ""; // Czyścimy listę produktów
+
+    const dbRef = db.ref("/7/products");
     
-                const container = document.getElementById("product-list");
-                container.innerHTML = ""; // Czyszczenie kontenera przed dodaniem produktów
-    
-                if (!products || Object.keys(products).length === 0) {
-                    console.warn("❌ Brak produktów do wyświetlenia!");
-                    container.innerHTML = "<p>Brak produktów do wyświetlenia.</p>";
-                    return;
-                }
-    
-                Object.keys(products).forEach(productId => {
-                    const product = products[productId];
-    
-                    if (product.quantity === 0) return; // Ukrywamy produkty z zerową ilością
-    
-                    const card = document.createElement("div");
-                    card.classList.add("product-card");
-                    card.setAttribute("id", `product-${productId}`);
-                    
-                    // Upewniamy się, że `product.quantity` jest poprawnie umieszczony wewnątrz karty
-                    card.innerHTML = `
-                        <img src="${product.image}" alt="${product.name}">
-                        <h2>${product.name}</h2>
-                        <p>${product.description}</p>
-                        <p class="price"><strong>Cena:</strong> ${product.price} PLN</p>
-                        <p class="quantity"><strong>Dostępność:</strong> <span id="quantity-${productId}">${product.quantity}</span> szt.</p>
-                        <button class="reserve-btn" data-id="${productId}">Rezerwuj</button>
-                        <div class="reservation-form" id="reservation-form-${productId}" style="display: none;">
-                            <input type="text" id="user-name-${productId}" placeholder="Twoje imię" required>
-                            <button class="send-reservation" data-id="${productId}">Wyślij rezerwację</button>
-                        </div>
-                    `;
-    
-                    container.appendChild(card);
-                });
-    
-                addEventListeners();
-            })
-            .catch(error => {
-                console.error("❌ Błąd wczytywania produktów:", error);
-                document.getElementById("product-list").innerHTML = "<p>Błąd ładowania danych. Sprawdź konsolę.</p>";
-            });
-    }
+    dbRef.on("value", snapshot => {  // 🔄 Nasłuchujemy zmian w Firebase w czasie rzeczywistym
+        const products = snapshot.val();
+        container.innerHTML = ""; // Czyścimy i odświeżamy produkty
+
+        if (!products) {
+            container.innerHTML = "<p>Brak produktów do wyświetlenia.</p>";
+            return;
+        }
+
+        Object.keys(products).forEach(productId => {
+            const product = products[productId];
+
+            if (product.quantity === 0) return; // Ukrywamy produkty z zerową ilością
+
+            const card = document.createElement("div");
+            card.classList.add("product-card");
+            card.setAttribute("id", `product-${productId}`);
+            card.innerHTML = `
+                <img src="${product.image}" alt="${product.name}">
+                <h2>${product.name}</h2>
+                <p>${product.description}</p>
+                <p class="price"><strong>Cena:</strong> ${product.price} PLN</p>
+                <p class="quantity"><strong>Dostępność:</strong> <span id="quantity-${productId}">${product.quantity}</span> szt.</p>
+                <button class="reserve-btn" data-id="${productId}" ${product.quantity === 0 ? "disabled" : ""}>Rezerwuj</button>
+                <div class="reservation-form" id="reservation-form-${productId}" style="display: none;">
+                    <input type="text" id="user-name-${productId}" placeholder="Twoje imię" required>
+                    <button class="send-reservation" data-id="${productId}">Wyślij rezerwację</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        addEventListeners();
+    });
+}
+
     
     
     function addEventListeners() {

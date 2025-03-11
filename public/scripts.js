@@ -138,4 +138,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadProducts();
+    
+    window.addEventListener("beforeunload", () => {
+    console.log("🚪 Użytkownik opuszcza stronę, zamykamy połączenie Firebase.");
+    db.goOffline(); // Zamykamy połączenie, aby zwolnić limit Firebase
+});
+
 });

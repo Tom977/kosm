@@ -1,2 +1,8 @@
 [build]
-  publish = "public"
+  functions = "netlify/functions"
+  publish = "public"  # Netlify musi wiedzieć, że pliki statyczne są w `public`
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

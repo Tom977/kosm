@@ -189,3 +189,22 @@ header {
     margin-bottom: 30px;
 }
 
+/* Domyślny wygląd kart produktu */
+.product-card {
+    border: 2px solid #ddd; /* Lekka ramka */
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px;
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Efekt podświetlenia na baby blue */
+.product-card:hover {
+    border-color: #a7d8f5; /* Baby blue */
+    box-shadow: 0px 6px 12px rgba(0, 162, 255, 0.3); /* Delikatny cień */
+    transform: scale(1.03); /* Lekkie powiększenie */
+}
+
+

@@ -213,7 +213,7 @@ header {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 body {
-    background-image: url("https://www.transparenttextures.com/patterns/marble.png");
-    background-color: #e0e0e0;
-    color: #333;
+    background: radial-gradient(circle at center, #3a3a3a, #1f1f1f);
+    background-image: url("https://www.transparenttextures.com/patterns/soft-wallpaper.png");
+    color: white;
 }

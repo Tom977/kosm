@@ -213,13 +213,7 @@ header {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 body {
-    background: linear-gradient(135deg, #1f1c2c 0%, #928DAB 100%);
-    color: white;
-}
-
-/* Złote akcenty */
-h1 {
-    background: linear-gradient(to right, #f3c623, #e0ac1c);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background-image: url("https://www.transparenttextures.com/patterns/marble.png");
+    background-color: #e0e0e0;
+    color: #333;
 }

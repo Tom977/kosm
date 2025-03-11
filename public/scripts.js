@@ -15,10 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = ""; // Czyścimy listę produktów
 
     const dbRef = db.ref("/7/products");
-    
-    dbRef.on("value", snapshot => {  // 🔄 Nasłuchujemy zmian w Firebase w czasie rzeczywistym
+
+    dbRef.on("value", snapshot => { // 🔄 Automatyczna aktualizacja
         const products = snapshot.val();
-        container.innerHTML = ""; // Czyścimy i odświeżamy produkty
+        container.innerHTML = ""; // Odświeżamy produkty
 
         if (!products) {
             container.innerHTML = "<p>Brak produktów do wyświetlenia.</p>";
@@ -28,8 +28,23 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.keys(products).forEach(productId => {
             const product = products[productId];
 
-            if (product.quantity === 0) return; // Ukrywamy produkty z zerową ilością
+            // Jeśli produkt się wyprzedał, usuwamy go z listy
+            if (product.quantity === 0) {
+                const existingCard = document.getElementById(`product-${productId}`);
+                if (existingCard) {
+                    existingCard.remove();
+                }
+                return;
+            }
 
+            let existingCard = document.getElementById(`product-${productId}`);
+            if (existingCard) {
+                // Jeśli produkt już istnieje, aktualizujemy tylko jego ilość
+                document.getElementById(`quantity-${productId}`).textContent = product.quantity;
+                return;
+            }
+
+            // Tworzymy nową kartę produktu
             const card = document.createElement("div");
             card.classList.add("product-card");
             card.setAttribute("id", `product-${productId}`);
@@ -48,9 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
             container.appendChild(card);
         });
 
-        addEventListeners();
+        addEventListeners(); // Ponownie dodajemy event listenery
     });
 }
+
 
     
     

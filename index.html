@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Produktów</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+</head>
+<body>
+    <header>
+    <h1>Katalog Produktów</h1>
+    </header>
+
+    <div id="product-list" class="container"></div>
+
+    <!-- Konfiguracja Firebase -->
+    <script src="firebase-config.js"></script>
+    <!-- Pobieranie produktów -->
+    <script src="scripts.js"></script>
+
+    <div class="reservation-form" id="reservation-form-${productId}" style="display: none;">
+    <input type="text" id="user-name-${productId}" placeholder="Twoje imię" required>
+    <button class="send-reservation" data-id="${productId}">Wyślij rezerwację</button>
+    </div>
+
+</body>
+</html>

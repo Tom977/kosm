@@ -62,50 +62,61 @@ document.addEventListener("DOMContentLoaded", () => {
     
     
     function addEventListeners() {
-        document.querySelectorAll(".reserve-btn").forEach(button => {
-            button.addEventListener("click", (event) => {
-                const productId = event.target.getAttribute("data-id");
-                document.getElementById(`reservation-form-${productId}`).style.display = "block";
-                event.target.style.display = "none"; // Ukrywamy przycisk "Rezerwuj"
-            });
+    document.querySelectorAll(".reserve-btn").forEach(button => {
+        button.addEventListener("click", (event) => {
+            const productId = event.target.getAttribute("data-id");
+            document.getElementById(`reservation-form-${productId}`).style.display = "block";
+            event.target.style.display = "none"; // Ukrywamy przycisk "Rezerwuj"
         });
-    
-        document.querySelectorAll(".send-reservation").forEach(button => {
-            button.addEventListener("click", (event) => {
-                const productId = event.target.getAttribute("data-id");
-                const userName = document.getElementById(`user-name-${productId}`).value.trim();
-                const quantityElement = document.getElementById(`quantity-${productId}`);
-                let currentQuantity = parseInt(quantityElement.textContent);
-    
-                if (!userName) {
-                    alert("Podaj swoje imię przed wysłaniem rezerwacji!");
+    });
+
+    document.querySelectorAll(".send-reservation").forEach(button => {
+        button.addEventListener("click", (event) => {
+            const productId = event.target.getAttribute("data-id");
+            const userName = document.getElementById(`user-name-${productId}`).value.trim();
+            const quantityElement = document.getElementById(`quantity-${productId}`);
+
+            if (!userName) {
+                alert("Podaj swoje imię przed wysłaniem rezerwacji!");
+                return;
+            }
+
+            const productRef = db.ref(`/7/products/${productId}`);
+
+            productRef.once("value").then(snapshot => {
+                let currentQuantity = snapshot.val()?.quantity;
+
+                if (!currentQuantity || currentQuantity <= 0) {
+                    alert("❌ Produkt został już wyprzedany!");
+                    document.getElementById(`product-${productId}`).remove(); // Usuwamy produkt z listy
                     return;
                 }
-    
-                if (currentQuantity > 0) {
-                    currentQuantity--;
-    
-                    db.ref(`/7/products/${productId}/quantity`).set(currentQuantity)
-                        .then(() => {
-                            console.log(`✅ Produkt ${productId} zaktualizowany w Firebase`);
-                            quantityElement.textContent = currentQuantity;
-    
-                            // Jeśli produkt nadal jest dostępny, przywracamy przycisk "Rezerwuj"
-                            if (currentQuantity > 0) {
-                                document.getElementById(`reservation-form-${productId}`).style.display = "none"; // Ukrywamy formularz
-                                const reserveButton = document.querySelector(`.reserve-btn[data-id="${productId}"]`);
-                                reserveButton.style.display = "inline-block"; // Przywracamy przycisk "Rezerwuj"
-                            } else {
-                                document.getElementById(`product-${productId}`).remove(); // Ukrywamy produkt, jeśli ilość = 0
-                            }
-                        })
-                        .catch(error => console.error("❌ Błąd aktualizacji Firebase:", error));
-                }
-    
+
+                // Zmniejszamy ilość o 1
+                currentQuantity--;
+
+                productRef.update({ quantity: currentQuantity })
+                    .then(() => {
+                        console.log(`✅ Produkt ${productId} zaktualizowany w Firebase`);
+                        quantityElement.textContent = currentQuantity;
+
+                        // Jeśli produkt nadal jest dostępny, przywracamy przycisk "Rezerwuj"
+                        if (currentQuantity > 0) {
+                            document.getElementById(`reservation-form-${productId}`).style.display = "none"; // Ukrywamy formularz
+                            const reserveButton = document.querySelector(`.reserve-btn[data-id="${productId}"]`);
+                            reserveButton.style.display = "inline-block"; // Przywracamy przycisk "Rezerwuj"
+                        } else {
+                            document.getElementById(`product-${productId}`).remove(); // Ukrywamy produkt, jeśli ilość = 0
+                        }
+                    })
+                    .catch(error => console.error("❌ Błąd aktualizacji Firebase:", error));
+
                 sendEmailNotification(userName, productId);
             });
         });
-    }
+    });
+}
+
     
     function sendEmailNotification(userName, productId) {
         const productRef = db.ref(`/7/products/${productId}`);

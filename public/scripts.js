@@ -84,16 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         productRef.transaction(product => {
             if (product && product.quantity > 0) {
-                product.quantity -= 1; // Odejmujemy ilość
-                return product; // Zwracamy zaktualizowane dane do Firebase
+                product.quantity -= 1; // Odejmujemy ilość produktu
+                return product; // Aktualizujemy Firebase
             } else {
                 alert("❌ Produkt został już wyprzedany!");
                 return; // Nie zmieniamy Firebase
             }
-        }).then(snapshot => {
-            if (!snapshot.committed) return; // Jeśli transakcja nie przeszła, kończymy funkcję
+        }).then(result => {
+            if (!result.committed) return; // Jeśli transakcja nie przeszła, kończymy funkcję
 
-            const newQuantity = snapshot.snapshot.val().quantity; // Pobieramy nową ilość
+            const newQuantity = result.snapshot.val().quantity; // Pobieramy nową ilość
 
             if (newQuantity === 0) {
                 document.getElementById(`product-${productId}`).remove(); // Usuwamy produkt, jeśli wyprzedany
@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }).catch(error => console.error("❌ Błąd Firebase:", error));
     }
 });
+
 
 
     

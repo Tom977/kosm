@@ -64,35 +64,34 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const productRef = db.ref(`/products/${productId}`);
+        const productRef = db.ref(`/7/products/${productId}`);
 
-        productRef.once("value").then(snapshot => {
-            let currentQuantity = snapshot.val().quantity;
-
-            if (currentQuantity > 0) {
-                currentQuantity--;
-
-                productRef.update({ quantity: currentQuantity })
-                    .then(() => {
-                        console.log(`✅ Produkt ${productId} zaktualizowany w Firebase`);
-                        document.getElementById(`quantity-${productId}`).textContent = currentQuantity;
-
-                        // Ukrywamy formularz i pokazujemy przycisk "Rezerwuj" jeśli produkt nadal dostępny
-                        if (currentQuantity > 0) {
-                            document.getElementById(`reservation-form-${productId}`).style.display = "none";
-                            document.querySelector(`.reserve-btn[data-id="${productId}"]`).style.display = "inline-block";
-                        } else {
-                            document.getElementById(`product-${productId}`).remove();
-                        }
-                    })
-                    .catch(error => console.error("❌ Błąd aktualizacji Firebase:", error));
+        productRef.transaction(product => {
+            if (product && product.quantity > 0) {
+                product.quantity -= 1; // Odejmujemy ilość
+                return product; // Zwracamy zaktualizowane dane do Firebase
             } else {
                 alert("❌ Produkt został już wyprzedany!");
-                document.getElementById(`product-${productId}`).remove(); // Ukrywamy produkt, jeśli już się wyprzedał
+                return; // Nie zmieniamy Firebase
             }
-        });
+        }).then(snapshot => {
+            if (!snapshot.committed) return; // Jeśli transakcja nie przeszła, kończymy funkcję
+
+            const newQuantity = snapshot.snapshot.val().quantity; // Pobieramy nową ilość
+
+            if (newQuantity === 0) {
+                document.getElementById(`product-${productId}`).remove(); // Usuwamy produkt, jeśli wyprzedany
+            } else {
+                document.getElementById(`quantity-${productId}`).textContent = newQuantity; // Aktualizujemy ilość w UI
+                document.getElementById(`reservation-form-${productId}`).style.display = "none"; // Ukrywamy formularz
+                document.querySelector(`.reserve-btn[data-id="${productId}"]`).style.display = "inline-block"; // Pokazujemy "Rezerwuj"
+            }
+
+            console.log(`✅ Rezerwacja potwierdzona! Pozostało: ${newQuantity} szt.`);
+        }).catch(error => console.error("❌ Błąd Firebase:", error));
     }
 });
+
 
     
     function sendEmailNotification(userName, productId) {

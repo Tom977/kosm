@@ -212,4 +212,67 @@ header {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+/* Kontener produktów – Grid dla estetycznego układu */
+#product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Automatyczne dopasowanie kolumn */
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Ustawienie równej wysokości dla kart */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    min-height: 420px; /* Minimalna wysokość kart */
+}
+
+/* Równanie wysokości elementów w kartach */
+.product-card h2 {
+    font-size: 18px;
+    text-align: center;
+    height: 45px; /* Stała wysokość tytułu */
+    overflow: hidden;
+}
+
+.product-card p {
+    font-size: 14px;
+    text-align: center;
+    height: 60px; /* Stała wysokość opisu */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Stylizacja obrazów – stały rozmiar */
+.product-card img {
+    width: 100%;
+    height: 150px; /* Stała wysokość */
+    object-fit: contain; /* Zapobiega rozciąganiu */
+    border-radius: 5px;
+}
+
+/* Wyrównanie przycisków */
+.reserve-btn {
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* Formularz rezerwacji */
+.reservation-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
